@@ -38,6 +38,7 @@
 #include "supertux/timer.hpp"
 #include "video/drawing_context.hpp"
 #include "video/renderer.hpp"
+#include "worldmap/worldmap.hpp"
 
 #include <stdio.h>
 
@@ -178,6 +179,15 @@ ScreenManager::update_gamelogic(float elapsed_time)
 {
   scripting::Scripting::current()->update_debugger();
   scripting::TimeScheduler::instance->update(game_time);
+
+  if(!g_config->play_tas.empty())
+  {
+    /* In TAS mode, if in menu or world map, mash menu_select button (FIXME: in worldmap, this doesn’t work after the bifurcation) */
+    if (m_menu_manager->is_active() || (worldmap::WorldMap::current() == m_screen_stack.back().get()))
+    {
+      InputManager::current()->get_controller()->set_control(Controller::MENU_SELECT, !InputManager::current()->get_controller()->hold(Controller::MENU_SELECT));
+    }
+  }
 
   if (!m_screen_stack.empty())
   {

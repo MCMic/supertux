@@ -66,8 +66,10 @@ public:
   boost::optional<std::string> start_demo;
   boost::optional<std::string> record_demo;
 
+  boost::optional<std::string> play_tas;
+
   boost::optional<bool> developer_mode;
-  
+
   boost::optional<bool> christmas_mode;
 
   // boost::optional<std::string> locale;

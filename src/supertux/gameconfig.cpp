@@ -45,6 +45,7 @@ Config::Config() :
   enable_script_debugger(false),
   start_demo(),
   record_demo(),
+  play_tas(),
   locale(),
   keyboard_config(),
   joystick_config(),

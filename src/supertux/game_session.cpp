@@ -436,7 +436,7 @@ GameSession::setup()
   currentsector->play_music(LEVEL_MUSIC);
 
   int total_stats_to_be_collected = level->stats.total_coins + level->stats.total_badguys + level->stats.total_secrets;
-  if ((!levelintro_shown) && (total_stats_to_be_collected > 0)) {
+  if ((!levelintro_shown) && (total_stats_to_be_collected > 0) && g_config->play_tas.empty()) {
     levelintro_shown = true;
     active = false;
     ScreenManager::current()->push_screen(std::unique_ptr<Screen>(new LevelIntro(level.get(), best_level_statistics, m_savegame.get_player_status())));
@@ -515,7 +515,9 @@ GameSession::update(float elapsed_time)
       level->stats.time = play_time;
       currentsector->update(elapsed_time);
     } else {
-      if (!end_sequence->is_tux_stopped()) {
+      if (!g_config->play_tas.empty()) {
+        on_escape_press();
+      } else if (!end_sequence->is_tux_stopped()) {
         currentsector->update(elapsed_time);
       } else {
         end_sequence->update(elapsed_time);

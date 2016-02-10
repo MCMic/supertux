@@ -44,6 +44,7 @@ CommandLineArguments::CommandLineArguments() :
   enable_script_debugger(),
   start_demo(),
   record_demo(),
+  play_tas(),
   developer_mode(),
   christmas_mode()
 {
@@ -302,6 +303,17 @@ CommandLineArguments::parse_args(int argc, char** argv)
         record_demo = argv[++i];
       }
     }
+    else if (arg == "--play-tas")
+    {
+      if (i+1 >= argc)
+      {
+        throw std::runtime_error("Need to specify a TAS folder");
+      }
+      else
+      {
+        play_tas = argv[++i];
+      }
+    }
     else if (arg == "--debug-scripts" || arg == "-s")
     {
       enable_script_debugger = true;
@@ -335,6 +347,7 @@ CommandLineArguments::merge_into(Config& config)
   merge_option(enable_script_debugger);
   merge_option(start_demo);
   merge_option(record_demo);
+  merge_option(play_tas);
   merge_option(developer_mode);
   merge_option(christmas_mode);
 

@@ -73,6 +73,7 @@
 #include "worldmap/sprite_change.hpp"
 #include "worldmap/tux.hpp"
 #include "worldmap/worldmap.hpp"
+#include "math/random_generator.hpp"
 
 static const float CAMERA_PAN_SPEED = 5.0;
 
@@ -676,14 +677,28 @@ WorldMap::update(float delta)
 
           // update state and savegame
           save_state();
+
+          GameSession* session = new GameSession(levelfile, m_savegame, &level_->statistics);
+
+          if(!g_config->play_tas.empty()) {
+            /* In TAS mode, load the record for this level and play it */
+            std::string start_demo = g_config->play_tas + "/" + levelfile + ".record";
+
+            g_config->random_seed = session->get_demo_random_seed(start_demo);
+            g_config->random_seed = gameRandom.srand(g_config->random_seed);
+            graphicsRandom.srand(0);
+
+            session->play_demo(start_demo);
+          }
+
           if(g_config->transitions_enabled)
           {
-            ScreenManager::current()->push_screen(std::unique_ptr<Screen>(new GameSession(levelfile, m_savegame, &level_->statistics)),
+            ScreenManager::current()->push_screen(std::unique_ptr<Screen>(session),
                                           std::unique_ptr<ScreenFade>(new ShrinkFade(shrinkpos, 1.0f)));
           }
           else
           {
-            ScreenManager::current()->push_screen(std::unique_ptr<Screen>(new GameSession(levelfile, m_savegame, &level_->statistics)));
+            ScreenManager::current()->push_screen(std::unique_ptr<Screen>(session));
           }
           in_level = true;
         } catch(std::exception& e) {
