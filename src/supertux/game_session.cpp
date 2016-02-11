@@ -446,6 +446,9 @@ GameSession::setup()
     ScreenManager::current()->set_screen_fade(std::unique_ptr<ScreenFade>(new FadeIn(1)));
   }
   end_seq_started = false;
+  if (!g_config->play_tas.empty()) {
+    std::cout << "split()" << std::endl;
+  }
 }
 
 void

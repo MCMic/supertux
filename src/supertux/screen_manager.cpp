@@ -39,6 +39,8 @@
 #include "video/drawing_context.hpp"
 #include "video/renderer.hpp"
 #include "worldmap/worldmap.hpp"
+#include "worldmap/level.hpp"
+#include "worldmap/tux.hpp"
 
 #include <stdio.h>
 
@@ -182,10 +184,39 @@ ScreenManager::update_gamelogic(float elapsed_time)
 
   if(!g_config->play_tas.empty())
   {
-    /* In TAS mode, if in menu or world map, mash menu_select button (FIXME: in worldmap, this doesn’t work after the bifurcation) */
-    if (m_menu_manager->is_active() || (worldmap::WorldMap::current() == m_screen_stack.back().get()))
+    /* In TAS mode, if in menu or world map, mash menu_select button */
+    if (m_menu_manager->is_active())
     {
       InputManager::current()->get_controller()->set_control(Controller::MENU_SELECT, !InputManager::current()->get_controller()->hold(Controller::MENU_SELECT));
+    } else if (worldmap::WorldMap::current() == m_screen_stack.back().get()) {
+      worldmap::LevelTile* level = worldmap::WorldMap::current()->at_level();
+      if (level) {
+        if (level->solved) {
+          int dirdata = worldmap::WorldMap::current()->available_directions_at(worldmap::WorldMap::current()->get_tux()->get_tile_pos());
+          // first, test for crossroads
+          if (dirdata == Tile::WORLDMAP_CNSE ||
+              dirdata == Tile::WORLDMAP_CNSW ||
+              dirdata == Tile::WORLDMAP_CNEW ||
+              dirdata == Tile::WORLDMAP_CSEW ||
+              dirdata == Tile::WORLDMAP_CNSEW) {
+            /* Go right at bifurcation */
+            InputManager::current()->get_controller()->set_control(Controller::RIGHT, !InputManager::current()->get_controller()->hold(Controller::RIGHT));
+          }
+        } else {
+          InputManager::current()->get_controller()->set_control(Controller::MENU_SELECT, !InputManager::current()->get_controller()->hold(Controller::MENU_SELECT));
+        }
+      } else if (!worldmap::WorldMap::current()->get_tux()->is_moving()) {
+        int dirdata = worldmap::WorldMap::current()->available_directions_at(worldmap::WorldMap::current()->get_tux()->get_tile_pos());
+        // first, test for crossroads
+        if (dirdata == Tile::WORLDMAP_CNSE ||
+            dirdata == Tile::WORLDMAP_CNSW ||
+            dirdata == Tile::WORLDMAP_CNEW ||
+            dirdata == Tile::WORLDMAP_CSEW ||
+            dirdata == Tile::WORLDMAP_CNSEW) {
+          /* Go right at second crossroad */
+          InputManager::current()->get_controller()->set_control(Controller::RIGHT, !InputManager::current()->get_controller()->hold(Controller::RIGHT));
+        }
+      }
     }
   }
 
