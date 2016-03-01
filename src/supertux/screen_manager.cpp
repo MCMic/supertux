@@ -192,27 +192,19 @@ ScreenManager::update_gamelogic(float elapsed_time)
       worldmap::LevelTile* level = worldmap::WorldMap::current()->at_level();
       if (level) {
         if (level->solved) {
-          int dirdata = worldmap::WorldMap::current()->available_directions_at(worldmap::WorldMap::current()->get_tux()->get_tile_pos());
-          // first, test for crossroads
-          if (dirdata == Tile::WORLDMAP_CNSE ||
-              dirdata == Tile::WORLDMAP_CNSW ||
-              dirdata == Tile::WORLDMAP_CNEW ||
-              dirdata == Tile::WORLDMAP_CSEW ||
-              dirdata == Tile::WORLDMAP_CNSEW) {
-            /* Go right at bifurcation */
+          if (level->pos == Vector(11,11)) {
+            /* Go right at the fork in the road */
             InputManager::current()->get_controller()->set_control(Controller::RIGHT, !InputManager::current()->get_controller()->hold(Controller::RIGHT));
+          } else if (level->pos == Vector(23,31)) {
+            /* Go left at mysterious house of ice */
+            InputManager::current()->get_controller()->set_control(Controller::LEFT, !InputManager::current()->get_controller()->hold(Controller::LEFT));
           }
         } else {
           InputManager::current()->get_controller()->set_control(Controller::MENU_SELECT, !InputManager::current()->get_controller()->hold(Controller::MENU_SELECT));
         }
       } else if (!worldmap::WorldMap::current()->get_tux()->is_moving()) {
         int dirdata = worldmap::WorldMap::current()->available_directions_at(worldmap::WorldMap::current()->get_tux()->get_tile_pos());
-        // first, test for crossroads
-        if (dirdata == Tile::WORLDMAP_CNSE ||
-            dirdata == Tile::WORLDMAP_CNSW ||
-            dirdata == Tile::WORLDMAP_CNEW ||
-            dirdata == Tile::WORLDMAP_CSEW ||
-            dirdata == Tile::WORLDMAP_CNSEW) {
+        if (dirdata == Tile::WORLDMAP_CSEW) {
           /* Go right at second crossroad */
           InputManager::current()->get_controller()->set_control(Controller::RIGHT, !InputManager::current()->get_controller()->hold(Controller::RIGHT));
         }
