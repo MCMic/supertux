@@ -519,7 +519,13 @@ GameSession::update(float elapsed_time)
       currentsector->update(elapsed_time);
     } else {
       if (!g_config->play_tas.empty()) {
-        on_escape_press();
+        if (levelfile == "levels/world1/27 - No More Mr Ice Guy.stl") {
+          /* Yeti is beaten, do the last split and stop the TAS */
+          std::cout << "split()" << std::endl;
+          g_config->play_tas = "";
+        } else {
+          on_escape_press();
+        }
       } else if (!end_sequence->is_tux_stopped()) {
         currentsector->update(elapsed_time);
       } else {
